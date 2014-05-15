@@ -1,0 +1,11 @@
+Example usage:
+
+    $ on-demand-ssh-tunnel 20110 110 -p2222 user@ssh-server 
+
+When something connects to 127.0.0.1:20110 on-demand-ssh-tunnel will
+start ssh subprocess
+
+    ssh -v -L random-tunnel-port:127.0.0.1:110 -n -p2222 user@ssh-server
+
+to tunnel communication to POP3 server accessible on port 110 (on
+server).
