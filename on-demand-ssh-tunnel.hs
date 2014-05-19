@@ -1,4 +1,4 @@
- {-# LANGUAGE ScopedTypeVariables #-}
+{-# LANGUAGE ScopedTypeVariables #-}
 
 import System.Environment
 import System.Process
@@ -11,6 +11,7 @@ import System.Random
 import System.IO
 import qualified Data.ByteString as BS
 import Text.Printf (printf)
+import System.Mem
 
 main :: IO ()
 main = do
@@ -41,17 +42,18 @@ handleConnection hConn tunnelPort targetPort sshArgs = do
       terminateProcess p
       _ <- waitForProcess p
       putStrLn "ssh exited"
+      performGC -- a good moment to finalize handles
   
   where forwardToTunnel = do
           hTunn <- tryTunnelConnection tunnelPort 15
           _ <- forkIO $ forward "hTunn->hConn" hTunn hConn
           forward "hConn->hTunn" hConn hTunn
           
-        forward desc h1 h2 = do
+        forward desc h1 h2 =
           forever $ do
             bs <- BS.hGetSome h1 4096
             putStrLn $ printf "%s %d bytes" desc (BS.length bs)
-            if BS.null bs then do
+            if BS.null bs then
                 error "no more data to tunnel"
             else do
                 BS.hPut h2 bs
