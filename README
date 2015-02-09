@@ -1,11 +1,10 @@
 Example usage:
 
-    $ on-demand-ssh-tunnel 20110 110 -p2222 user@ssh-server 
+    $ on-demand-ssh-tunnel '[ SSHTunnel 59000 5900 ["user@host1", "while true; do date; sleep 60; done"] ]'
 
-When something connects to 127.0.0.1:20110 on-demand-ssh-tunnel will
+When something connects to 127.0.0.1:59000 on-demand-ssh-tunnel will
 start ssh subprocess
 
-    ssh -v -L random-tunnel-port:127.0.0.1:110 -n -p2222 user@ssh-server
+    ssh -v -Lrandom-tunnel-port:127.0.0.1:5900 -n user@host1
 
-to tunnel communication to POP3 server accessible on port 110 (on
-server).
+to tunnel communication to VNC server accessible on port 5900 (on host1).
