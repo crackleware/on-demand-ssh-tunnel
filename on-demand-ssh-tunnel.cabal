@@ -1,5 +1,5 @@
 name:                on-demand-ssh-tunnel
-version:             0.1.0.3
+version:             0.1.0.4
 synopsis:            Program that sends traffic through SSH tunnels on-demand
 description:         Program that sends traffic through SSH tunnels on-demand
 homepage:            https://github.com/crackleware/on-demand-ssh-tunnel
@@ -7,7 +7,7 @@ license:             MIT
 license-file:        LICENSE
 author:              Predrag Radovic
 maintainer:          predrg@gmail.com
-copyright:           (c) 2014 Predrag Radovic
+copyright:           (c) 2015 Predrag Radovic
 category:            Network
 build-type:          Simple
 extra-source-files:  README
