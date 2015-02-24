@@ -6,7 +6,7 @@ module Network.OnDemandSSHTunnel (
     Config(..),
     prettyConfig,
     setupConfiguration,
-    setupOnDemandTunnel,
+    setupOnDemandTunnel
 ) where
 
 import System.Process
@@ -23,21 +23,23 @@ import System.Mem
 
 import Text.PrettyPrint.GenericPretty
 
-data SSHTunnel = SSHTunnel Int Int [String] deriving (Show, Read, Generic)
-newtype Config = Config [SSHTunnel] deriving (Show, Read, Generic)
+data SSHTunnel = SSHTunnel Int String [String]
+                 deriving (Show, Read, Generic)
+newtype Config = Config [SSHTunnel]
+                 deriving (Show, Read, Generic)
 
 instance Out SSHTunnel
 instance Out Config
 
 prettyConfig :: Config -> String
-prettyConfig cfg = pretty cfg
+prettyConfig = pretty
 
 setupConfiguration :: Config -> IO ()
 setupConfiguration (Config tuns) =
     forM_ tuns $ forkIO . setupOnDemandTunnel
 
 setupOnDemandTunnel :: SSHTunnel -> IO ()
-setupOnDemandTunnel (SSHTunnel listenPort targetPort sshArgs) = do
+setupOnDemandTunnel (SSHTunnel listenPort targetHostPort sshArgs) = do
   sock <- socket AF_INET Stream defaultProtocol
   setSocketOption sock ReuseAddr 1
   addr <- inet_addr "127.0.0.1"
@@ -50,12 +52,12 @@ setupOnDemandTunnel (SSHTunnel listenPort targetPort sshArgs) = do
     putStrLn $ "connection accepted: " ++ show connaddr
     forkIO $ do
       tunnelPort :: Int <- randomRIO (50000, 55000)
-      handleConnection hConn tunnelPort targetPort sshArgs
+      handleConnection hConn tunnelPort targetHostPort sshArgs
 
-handleConnection :: Handle -> Int -> Int -> [String] -> IO ()
-handleConnection hConn tunnelPort targetPort sshArgs = do
+handleConnection :: Handle -> Int -> String -> [String] -> IO ()
+handleConnection hConn tunnelPort targetHostPort sshArgs = do
     (_, _, _, p) <- createProcess (proc "ssh" $ ["-v"] ++ [
-      "-L" ++ show tunnelPort ++ ":127.0.0.1:" ++ show targetPort, "-n"] ++
+      "-L" ++ show tunnelPort ++ ":" ++ targetHostPort, "-n"] ++
       sshArgs)
     finally forwardToTunnel $ do
       putStrLn "terminating ssh"
