@@ -1,6 +1,6 @@
 Example usage:
 
-    $ on-demand-ssh-tunnel '[ SSHTunnel 59000 5900 ["user@host1", "while true; do date; sleep 60; done"] ]'
+    $ on-demand-ssh-tunnel '[ SSHTunnel 59000 "127.0.0.1:5900" ["user@host1", "while true; do date; sleep 60; done"] ]'
 
 When something connects to 127.0.0.1:59000 on-demand-ssh-tunnel will
 start ssh subprocess
